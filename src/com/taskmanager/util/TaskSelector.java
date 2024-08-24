@@ -12,7 +12,12 @@ import com.taskmanager.core.TaskList;
  * TaskList}. This class utilizes the {@link Task#compareTo(Task)} method to
  * first sort the {@code TaskList} and return the element starting at index 0.
  * </p>
- * @param <T>
+ * @param <T> the input type of the operation
+ *
+ * @author mac
+ * @see     Task
+ * @see     TaskList
+ * @since 1.0
  */
 @FunctionalInterface
 public interface TaskSelector<T extends TaskList> {
