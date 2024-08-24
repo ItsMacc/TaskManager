@@ -23,8 +23,8 @@ public class Task implements Comparable<Task>{
             this.name = name;
             this.details = details;
             this.priority = priority;
-        } else throw new IllegalArgumentException("Please check name, details " +
-                "and/or priority of task!");
+        } else throw new IllegalArgumentException("Please check name, details "
+                + "and/or priority of task!");
     }
 
     public void startTask(){
@@ -65,8 +65,7 @@ public class Task implements Comparable<Task>{
         int result2 = currentState.ordinal() - o.currentState.ordinal();
         int result3 = name.compareTo(o.name);
 
-        //Checks priorities first, then checks if task is in progress or not yet
-        //started, and then finally checks the name of the tasks.
+        //Checks task's priority first, then current state and then the name.
         return (
                 (result1 == 0) ? (
                         (result2 == 0) ? (result3) : result2)
