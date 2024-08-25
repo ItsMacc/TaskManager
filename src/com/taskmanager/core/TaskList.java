@@ -11,9 +11,8 @@ import java.util.List;
  * objects.
  *
  * <p>
- * This class also contains methods to add/remove tasks, and print the
- * TaskList in a formatted manner. Further functionality is yet to be
- * implemented in future versions.
+ * This class also contains methods to add/remove tasks, print the TaskList
+ * in a formatted manner, get the next highest priority task.
  * </p>
  *
  * @author mac
@@ -23,9 +22,12 @@ import java.util.List;
 public class TaskList implements TaskSelector<TaskList> {
     private List<Task> taskList;
 
+    //CONSTRUCTOR
     public TaskList() {
         taskList = new ArrayList<>();
     }
+
+    //TaskList OPERATIONS
 
     /**
      * A method to add a task to the {@code taskList}.
@@ -88,9 +90,40 @@ public class TaskList implements TaskSelector<TaskList> {
         }
     }
 
+    //GETTERS
     public List<Task> getTaskList() {
         return taskList;
     }
+
+    //OVERRIDDEN METHODS
+
+    /**
+     * A method to return the next task with respect to priority, current
+     * state and name, in that order.
+     * <p>
+     * The method does not return a task whose {@code CurrentState} is {@code
+     * CurrentState.FINISHED}. The {@code INDEX} field is incremented every
+     * time a {@code Task} is returned.
+     * </p>
+     * @return the Task that currently has the highest priority
+     */
+    @Override
+    public Task getNextTask() {
+        List<Task> copy = this.getTaskList();
+        copy.sort(Task::compareTo);
+
+        System.out.println(copy);
+        Task nextTask = copy.getFirst();
+        if ((nextTask != null) &&
+                (nextTask.getCurrentState() != CurrentState.FINISHED)){
+            return nextTask;
+        } else {
+            System.out.println("All tasks are finished!");
+            return null;
+        }
+    }
+
+    //HELPER METHODS
 
     /**
      * A private method to check whether the {@code taskList} contains a task.
@@ -110,31 +143,5 @@ public class TaskList implements TaskSelector<TaskList> {
             }
         }
         return false;
-    }
-
-    /**
-     * A method to return the next task with respect to priority, current 
-     * state and name, in that order.
-     * <p>
-     * The method does not return a task whose {@code CurrentState} is {@code
-     * CurrentState.FINISHED}. The {@code INDEX} field is incremented every 
-     * time a {@code Task} is returned.
-     * </p>
-     * @return the Task that currently has the highest priority
-     */
-    @Override
-    public Task getNextTask() {
-        List<Task> copy = this.getTaskList();
-        copy.sort(Task::compareTo);
-
-        System.out.println(copy);
-        Task nextTask = copy.getFirst();
-        if ((nextTask != null) &&
-                (nextTask.getCurrentState() != CurrentState.FINISHED)){
-            return nextTask;
-        } else {
-            System.out.println("All tasks are finished!");
-            return null;
-        }
     }
 }
