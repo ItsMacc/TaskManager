@@ -1,5 +1,7 @@
 package com.taskmanager.core;
 
+import com.taskmanager.util.IllegalCurrentStateException;
+
 /**
  * The {@code Task} class represents an objective to be completed. This class
  * uses {@link CurrentState} to represent the current state of a task.
@@ -42,11 +44,15 @@ public class Task implements Comparable<Task>{
     private int priority;
 
     public Task(String name) {
-        this(name, "None");
+        this(name, "None", 1);
     }
 
     public Task(String name, String details) {
         this(name, details, 1);
+    }
+
+    public Task(String name, int priority) {
+        this(name, "None", 1);
     }
 
     public Task(String name, String details, int priority) {
@@ -65,10 +71,11 @@ public class Task implements Comparable<Task>{
      * Once a task is in progress, it's current
      * state can not be changed back to {@code CurrentState.NOT_STARTED}
      * </p>
+     * @throws IllegalCurrentStateException if the current state is set to a
+     * value lower than itself
      */
-    public void startTask(){
-        System.out.println("Task started!");
-        currentState = CurrentState.IN_PROGRESS;
+    public void startTask() throws IllegalCurrentStateException {
+        setCurrentState(CurrentState.IN_PROGRESS);
     }
 
     /**
@@ -79,10 +86,11 @@ public class Task implements Comparable<Task>{
      * state can not be changed back to {@code CurrentState.NOT_STARTED} or
      * {@code CurrentState.IN_PROGRESS}
      * </p>
+     * @throws IllegalCurrentStateException if the current state is set to a
+     * value lower than itself
      */
-    public void completeTask(){
-        System.out.println("Task finished!");
-        currentState = CurrentState.FINISHED;
+    public void completeTask() throws IllegalCurrentStateException {
+        setCurrentState(CurrentState.FINISHED);
     }
 
     /**
@@ -110,8 +118,8 @@ public class Task implements Comparable<Task>{
 
     @Override
     public int compareTo(Task o) {
-        int result1 = o.priority - priority;
-        int result2 = currentState.ordinal() - o.currentState.ordinal();
+        int result1 =  currentState.ordinal() - o.currentState.ordinal();
+        int result2 = o.priority - priority;
         int result3 = name.compareTo(o.name);
 
         //Checks task's priority first, then current state and then the name.
@@ -139,9 +147,24 @@ public class Task implements Comparable<Task>{
                 (this.currentState == task.currentState);
     }
 
+    public boolean equalsIgnoreState(Task task){
+        return this.name.equals(task.name) &&
+                (this.priority == task.priority);
+    }
+
     //GETTERS AND SETTERS
     public CurrentState getCurrentState() {
         return currentState;
+    }
+
+    public void setCurrentState(CurrentState currentState)
+            throws IllegalCurrentStateException {
+        int result = this.currentState.ordinal() - currentState.ordinal();
+        if (result >= 0){
+            throw new IllegalCurrentStateException("Current state cannot be " +
+                    "set to a value lower than/equal to it's current value");
+        }
+        this.currentState = currentState;
     }
 
     public String getName() {
