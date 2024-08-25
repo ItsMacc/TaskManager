@@ -1,8 +1,8 @@
 package com.taskmanager.core;
 
 import com.taskmanager.util.TaskSelector;
-
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -22,7 +22,6 @@ import java.util.List;
  */
 public class TaskList implements TaskSelector<TaskList> {
     private List<Task> taskList;
-    private static int INDEX = 0;
 
     public TaskList() {
         taskList = new ArrayList<>();
@@ -52,9 +51,18 @@ public class TaskList implements TaskSelector<TaskList> {
      * be thrown.
      * </p>
      * @param t the task to be removed
+     * @throws NullPointerException if the task does not exist
      */
-    public void removeTask(Task t){
-        taskList.removeIf(task -> task.equals(t));
+    public void removeTask(Task t) {
+        Iterator<Task> iterator = taskList.iterator();
+        while (iterator.hasNext()) {
+            Task task = iterator.next();
+            if (t.equalsIgnoreState(task)) {
+                iterator.remove();
+                return;
+            }
+        }
+        throw new NullPointerException("Task does not exist!");
     }
 
     /**
@@ -68,12 +76,14 @@ public class TaskList implements TaskSelector<TaskList> {
                             |Task: %-42s|
                             |Current Progress: %-30s|
                             |Priority: %d %-36s|
+                            |Details: %-39s|
                             %s
                             """,
                     task.getName(),
                     task.getCurrentState(),
                     task.getPriority(),
                     "",
+                    task.getDetails(),
                     "-".repeat(50));
         }
     }
@@ -117,10 +127,13 @@ public class TaskList implements TaskSelector<TaskList> {
         List<Task> copy = this.getTaskList();
         copy.sort(Task::compareTo);
 
-        if (copy.get(INDEX).getCurrentState() != CurrentState.FINISHED){
-            return copy.get(INDEX++);
+        System.out.println(copy);
+        Task nextTask = copy.getFirst();
+        if ((nextTask != null) &&
+                (nextTask.getCurrentState() != CurrentState.FINISHED)){
+            return nextTask;
         } else {
-            System.out.println("All tasks finished!\n");
+            System.out.println("All tasks are finished!");
             return null;
         }
     }
