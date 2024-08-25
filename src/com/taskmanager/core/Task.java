@@ -36,13 +36,14 @@ import com.taskmanager.util.IllegalCurrentStateException;
  * @since 1.0
  */
 public class Task implements Comparable<Task>{
+    private static final int MAX_PRIORITY = 5;
     private CurrentState currentState = CurrentState.NOT_STARTED;
-    private final int MAX_PRIORITY = 5;
 
     private String name;
     private String details;
     private int priority;
 
+    //CONSTRUCTORS
     public Task(String name) {
         this(name, "None", 1);
     }
@@ -56,13 +57,15 @@ public class Task implements Comparable<Task>{
     }
 
     public Task(String name, String details, int priority) {
-        if (check(name, details, priority)){
+        if (isValid(name, details, priority)){
             this.name = name;
             this.details = details;
             this.priority = priority;
         } else throw new IllegalArgumentException("Please check name, details "
                 + "and/or priority of task!");
     }
+
+    //TASK OPERATIONS
 
     /**
      * A method to start a task and set current state to {@code
@@ -93,6 +96,8 @@ public class Task implements Comparable<Task>{
         setCurrentState(CurrentState.FINISHED);
     }
 
+    //HELPER METHODS
+
     /**
      * A private method to ensure all Tasks created contain valid arguments.
      *
@@ -102,32 +107,10 @@ public class Task implements Comparable<Task>{
      * @return {@code true} if {@param name}, {@param details} and
      * {@param priority} are valid, otherwise return {@code false}
      */
-    private boolean check(String name, String details, int priority){
+    private boolean isValid(String name, String details, int priority){
         return !name.isEmpty() &&
                 !details.isEmpty() &&
                 (priority <= MAX_PRIORITY && priority >= 0);
-    }
-
-    //Overridden methods
-    @Override
-    public String toString() {
-        return "%s:\nCurrent State: %s\n(%s)\n[PRIORITY = %d]\n".formatted(
-                name, currentState, details, priority
-        );
-    }
-
-    @Override
-    public int compareTo(Task o) {
-        int result1 =  currentState.ordinal() - o.currentState.ordinal();
-        int result2 = o.priority - priority;
-        int result3 = name.compareTo(o.name);
-
-        //Checks task's priority first, then current state and then the name.
-        return (
-                (result1 == 0) ? (
-                        (result2 == 0) ? (result3) : result2)
-                        : result1
-                );
     }
 
     /**
@@ -153,6 +136,40 @@ public class Task implements Comparable<Task>{
     }
 
     //GETTERS AND SETTERS
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (isValid(name, "default", 1)){
+            this.name = name;
+        } else throw new IllegalArgumentException("Name of task cannot be " +
+                "empty!");
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        if (isValid("default", details, 1)){
+            this.details = details;
+        } else throw new IllegalArgumentException("Task details cannot be " +
+                "empty!");
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        if (isValid("default", "default", priority)){
+            this.priority = priority;
+        } else throw new IllegalArgumentException("Priority of task must be " +
+                "between 1 and 5");
+    }
+
     public CurrentState getCurrentState() {
         return currentState;
     }
@@ -167,36 +184,24 @@ public class Task implements Comparable<Task>{
         this.currentState = currentState;
     }
 
-    public String getName() {
-        return name;
+    //OVERRIDDEN METHODS
+    @Override
+    public String toString() {
+        return "%s:\nCurrent State: %s\n(%s)\n[PRIORITY = %d]\n".formatted(
+                name, currentState, details, priority
+        );
     }
 
-    public void setName(String name) {
-        if (check(name, "default", 1)){
-            this.name = name;
-        } else throw new IllegalArgumentException("Name of task cannot be " +
-                "empty!");
-    }
 
-    public String getDetails() {
-        return details;
-    }
+    @Override
+    public int compareTo(Task o) {
+        int result1 =  currentState.ordinal() - o.currentState.ordinal();
+        int result2 = o.priority - priority;
+        int result3 = name.compareTo(o.name);
 
-    public void setDetails(String details) {
-        if (check("default", details, 1)){
-            this.details = details;
-        } else throw new IllegalArgumentException("Task details cannot be " +
-                "empty!");
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        if (check("default", "default", priority)){
-            this.priority = priority;
-        } else throw new IllegalArgumentException("Priority of task must be " +
-                "between 1 and 5");
+        //Compare Task's current state, then priority and then the name.
+        return ((result1 == 0) ?
+                ((result2 == 0) ? (result3) : result2)
+                : result1);
     }
 }
