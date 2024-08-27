@@ -112,7 +112,6 @@ public class TaskList implements TaskSelector<TaskList> {
         List<Task> copy = this.getTaskList();
         copy.sort(Task::compareTo);
 
-        System.out.println(copy);
         Task nextTask = copy.getFirst();
         if ((nextTask != null) &&
                 (nextTask.getCurrentState() != CurrentState.FINISHED)){
