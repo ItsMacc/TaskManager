@@ -31,7 +31,7 @@ public class TaskManager {
         while (!quit(input)) {
             switch (input.toLowerCase()) {
                 case "a" -> {
-                     addTaskToManager(tasks);
+                    addTaskToManager(tasks);
                     displayMenu();
                     input = scanner.nextLine();
                 }
